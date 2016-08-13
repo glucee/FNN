@@ -22,7 +22,7 @@ class FNN:
     def define_placeholders(self):
         input_placeholder = tf.placeholder(tf.float32, shape = (None, self.state_shape))
         output_placeholder = tf.placeholder(tf.float32, shape = (None, self.num_actions))
-        return input_placeholder, target_placeholder, output_placeholder
+        return input_placeholder, output_placeholder
 
 
     def variable_summaries(self,var, name):
@@ -34,7 +34,6 @@ class FNN:
         tf.scalar_summary('sttdev/' + name, stddev)
         tf.scalar_summary('max/' + name, tf.reduce_max(var))
         tf.scalar_summary('min/' + name, tf.reduce_min(var))
-        tf.histogram_summary(name, var)
 
     def multilayer_perceptron(self, input_mat):
         n_input = self.state_shape
@@ -70,7 +69,7 @@ class FNN:
         return out_layer, reg_term, weights, biases
 
     def create_model(self):
-        self.input_placeholder, self.target_placeholder, self.output_placeholder = self.define_placeholders()
+        self.input_placeholder, self.output_placeholder = self.define_placeholders()
         output, reg_term, weights, biases = self.multilayer_perceptron(self.input_placeholder)
 
         self.variable_summaries(weights['h1'], 'layer1'+ '/weights')
@@ -81,7 +80,7 @@ class FNN:
         self.NN_output = output
 
 
-        # self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(output,self.target_placeholder))
+        # self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(output,self.output_placeholder))
 
         self.cost = tf.reduce_sum(tf.square(self.output_placeholder-self.NN_output)) + reg_term
 
@@ -124,13 +123,14 @@ class FNN:
 
 
     def train_step(self, Input_mat, actions):
-        self.t += 1
         _, cost, prediction_probs, self.summary = self.session.run(
         [self.train_op, self.cost, self.NN_output, self.merged],
         feed_dict = {
             self.input_placeholder : Input_mat,
             self.output_placeholder : actions
         })
+        print(tf.shape(prediction_probs))
+        print(tf.shape(actions))
         #tensorboard --logdir='dqn_log_files/log1/data1'
 
     def predict(self, states):

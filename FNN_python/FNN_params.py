@@ -51,4 +51,4 @@ def parse_args():
         'log_file_path': args.log_path
         }
 
-    return agent_params, dqn_params, network_params
+    return training_params, network_params
