@@ -55,13 +55,14 @@ class FNN:
         layer_1 = tf.add(tf.matmul(input_mat, weights['h1']), biases['b1'])
         # mean,variance = tf.nn.moments(layer_1,[0])
         # layer_1 = tf.nn.batch_normalization(layer_1,mean,variance,None,None,0.00001)
-        layer_1 = tf.tanh(layer_1)
-        # layer_1 = tf.nn.relu(layer_1)
+        # layer_1 = tf.tanh(layer_1)
+        layer_1 = tf.nn.relu(layer_1)
         # Hidden layer with RELU activation
         layer_2 = tf.add(tf.matmul(layer_1, weights['h2']), biases['b2'])
         # mean,variance = tf.nn.moments(layer_2,[0])
         # layer_2 = tf.nn.batch_normalization(layer_2,mean,variance,None,None,0.00001)
-        layer_2 = tf.tanh(layer_2)
+        # layer_2 = tf.tanh(layer_2)
+        layer_2 = tf.nn.relu(layer_2)
         # Output layer with linear activation
         out_layer = tf.matmul(layer_2, weights['out']) + biases['out']
         reg_term = self.reg * (tf.reduce_sum(tf.square(weights['h1']))+
@@ -80,9 +81,9 @@ class FNN:
         self.NN_output = output
 
 
-        # self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(output,self.output_placeholder))
+        self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(output,self.output_placeholder))
 
-        self.cost = tf.reduce_sum(tf.square(self.output_placeholder-self.NN_output)) + reg_term
+        # self.cost = tf.reduce_sum(tf.square(self.output_placeholder-self.NN_output)) + reg_term
 
         tf.scalar_summary('cost', self.cost)
 
@@ -129,8 +130,9 @@ class FNN:
             self.input_placeholder : Input_mat,
             self.output_placeholder : actions
         })
-        print(tf.shape(prediction_probs))
-        print(tf.shape(actions))
+        return cost
+        # print(tf.shape(prediction_probs))
+        # print(tf.shape(actions))
         #tensorboard --logdir='dqn_log_files/log1/data1'
 
     def predict(self, states):

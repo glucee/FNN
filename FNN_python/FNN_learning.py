@@ -9,7 +9,7 @@ import FNN_model
 OUTPUT_LAYER_SIZE = 2
 INPUT_LAYER_SIZE = 75
 BatchSize = 8
-training_epoch = 10
+training_epoch = 50
 
 def import_data(file_name):
     mat_contents = sio.loadmat(file_name)
@@ -50,21 +50,27 @@ def train():
     SAVING_PATH = training_params['saver_path']
     SAVING_RATE = training_params['saving_rate']
     input_data, output_data = import_data('data.mat')
-    print (np.shape(output_data))
+    # print (np.shape(output_data))
     FNN = FNN_model.FNN(OUTPUT_LAYER_SIZE, INPUT_LAYER_SIZE, network_params)
     restore_nn_model(FNN, SAVING_PATH)
     for epoch in range(training_epoch):
         avg_cost = 0
         NumberOfInputs, _ = input_data.shape
-        for i in range(NumberOfInputs):
-            FNN.train_step(input_data,output_data)
-        # total_batch = int(NumberOfInputs / BatchSize)
-        # for i in range(total_batch):
-        #     Input_batch = input_data[i*BatchSize:(i+1)]
-        #     Output_batch = output_data
-        #     FNN.train_step(Input_batch,Output_batch)
-    #     if epoch % SAVING_RATE == 0:
-    #         save_nn_model(FNN, SAVING_PATH)
+        total_batch = int(NumberOfInputs / BatchSize)
+
+        # for i in range(NumberOfInputs):
+        #     FNN.train_step(input_data,output_data)
+        for i in range(total_batch):
+            Input_batch = input_data[i*BatchSize:(i+1)*BatchSize]
+            Output_batch = output_data[i*BatchSize:(i+1)*BatchSize]
+            # print (np.shape(Input_batch))
+            # print (np.shape(Output_batch))
+            cost = FNN.train_step(Input_batch,Output_batch)
+            # if epoch % SAVING_RATE == 0:
+                # save_nn_model(FNN, SAVING_PATH)
+            # print(cost)
+            avg_cost += cost/total_batch
+        print("Epoch: {}, cost = {}".format(epoch, avg_cost))
     #
 
 if __name__=='__main__':
