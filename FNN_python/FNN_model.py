@@ -135,12 +135,11 @@ class FNN:
         # print(tf.shape(actions))
         #tensorboard --logdir='dqn_log_files/log1/data1'
 
-    def predict(self, states):
+    def predict(self, states, label):
         cost, prediction_probs = self.session.run(
         [self.cost, self.NN_output],
         feed_dict = {
         self.input_placeholder: states,
-        self.target_placeholder: np.zeros(len(states)),
-        self.output_placeholder: np.zeros((len(states),self.num_actions))
+        self.output_placeholder: label
         })
         return prediction_probs
