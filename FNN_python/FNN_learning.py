@@ -72,6 +72,7 @@ def train():
             # print(cost)
             avg_cost += cost/total_batch
         print("Epoch: {}, cost = {}".format(epoch, avg_cost))
+    save_nn_model(FNN, SAVING_PATH)
     # test model
     Estimated_output = FNN.predict(test_input_data, test_output_data)
     correct_prediction = np.equal(np.argmax(Estimated_output,1), np.argmax(test_output_data,1))
