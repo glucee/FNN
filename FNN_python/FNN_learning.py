@@ -7,11 +7,11 @@ import FNN_model
 
 
 OUTPUT_LAYER_SIZE = 2
-INPUT_LAYER_SIZE = 75
+INPUT_LAYER_SIZE = 73
 BatchSize = 8
 training_epoch = 50
 
-def import_data(file_name):
+def import_data_training(file_name):
     mat_contents = sio.loadmat(file_name+'.mat')
     """
     Extract two matrices from mat file:
@@ -19,8 +19,22 @@ def import_data(file_name):
     2. Output data
     These are returned as numpy arrays
     """
-    Input_data  = mat_contents[file_name+'_input']
-    Output_data  = mat_contents[file_name+'_output']
+    # print(mat_contents)
+    Input_data  = mat_contents['training_fy']
+    Output_data  = mat_contents['training_target']
+    return Input_data, Output_data
+
+
+def import_data_validation(file_name):
+    mat_contents = sio.loadmat(file_name+'.mat')
+    """
+    Extract two matrices from mat file:
+    1. Input data
+    2. Output data
+    These are returned as numpy arrays
+    """
+    Input_data  = mat_contents['validation_fy']
+    Output_data  = mat_contents['validation_target']
     return Input_data, Output_data
 
     # return NumberOfInputs, input_data, output_data
@@ -49,8 +63,8 @@ def train():
 
     SAVING_PATH = training_params['saver_path']
     SAVING_RATE = training_params['saving_rate']
-    input_data, output_data = import_data('training')
-    test_input_data, test_output_data = import_data('validation')
+    input_data, output_data = import_data_training('train2')
+    test_input_data, test_output_data = import_data_validation('valid2')
     # print (np.shape(output_data))
     FNN = FNN_model.FNN(OUTPUT_LAYER_SIZE, INPUT_LAYER_SIZE, network_params)
     restore_nn_model(FNN, SAVING_PATH)
